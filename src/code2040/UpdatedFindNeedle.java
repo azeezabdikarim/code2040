@@ -2,7 +2,6 @@ package code2040;
 
 import java.io.*;
 import java.util.ArrayList;
-
 import org.json.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,7 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-public class findNeedle{
+public class UpdatedFindNeedle{
 
 	public static void main(String[] args) throws IOException {
 		JSONObject json = new JSONObject();
@@ -33,50 +32,41 @@ public class findNeedle{
 			//System.out.println(response.toString());
 			String receivedString = EntityUtils.toString(entity);
 //			System.out.println(receivedString);
-//			System.out.println(receivedString.length());
+
+			
+			/*
+			 * This is an updated approach to solving the same problem of finding the location of a needle within a haystack.
+			 * This approach is much cleaner and easier to understand than my last approach because I use the JSON tools instead of parsing through  
+			 * each character of the JSON string in order to identify the needle and then create my own array. 
+			 */
 			
 			
+			//Create JSONObject to help parse the JSON
+			JSONObject obj = new JSONObject(receivedString);
+			String needle = obj.getString("needle");
+//			System.out.println(needle);
 			
+			JSONArray array = obj.getJSONArray("haystack");
+//			System.out.println(array.get(0));
+			int location = -1;
 			
-		//Processing the response
-			String wordInArray = new String();
-			String needle = new String();
-			ArrayList haystackList = new ArrayList();
-			int position = 0;
-			
-			//identifying the needle
-			for(int x = 11; x < 19; x++){
-				needle += receivedString.charAt(x);	
-			}
-			//System.out.println(needle);
-			
-			//parsing the string to create an array that represents the haystack
-			
-			for( int charNum = 31; charNum < receivedString.length(); charNum++){
-				if(receivedString.charAt(charNum)=='"'){
-					charNum++;
-					while(receivedString.charAt(charNum)!= '"'){
-						wordInArray += receivedString.charAt(charNum);
-						charNum++;
-					}
-					haystackList.add(wordInArray);
-					wordInArray = "";
+			//Linearly searching through the JSONArray to find the needle
+			for(int x = 0; x < array.length(); x++){
+				if(needle.equals(array.get(x))){
+					location = x;
 				}
 			}
 			
-			//find the position of the needle in the haystack
-			String[] haystackArray = new String[haystackList.size()];
-			haystackArray = (String[]) haystackList.toArray(haystackArray);
-			for(int x = 0; x < haystackArray.length; x++){
-				if(needle.equals(haystackArray[x])){
-					position  = x;
-				}
-			}
-			//System.out.println(position);
-			//System.out.println(haystackArray[position]);
+//			if(location != -1){
+//				System.out.println(location);
+//			}
+//			else{
+//				System.out.println("The needle was not found.");
+//			}
+			
 			
 
-			json2.put("needle" , position);
+			json2.put("needle" , location);
 			HttpPost request2 = new HttpPost("http://challenge.code2040.org/api/haystack/validate");
 			StringEntity params2 = new StringEntity(json2.toString());
 			request2.addHeader("content-type", "application/json");

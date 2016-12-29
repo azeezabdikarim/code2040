@@ -83,12 +83,12 @@ public class Prefix{
 				prefixCheck = "";
 			}
 			
+			
 			//converting list2 to array2
 			String[] array2 = new String[list2.size()];
 			array2 = (String[]) list2.toArray(array2);
-			
 
-			json2.put("array" , array2);
+			json2.put(" array" , array2);
 			HttpPost request2 = new HttpPost("http://challenge.code2040.org/api/prefix/validate");
 			StringEntity params2 = new StringEntity(json2.toString());
 			request2.addHeader("content-type", "application/json");
